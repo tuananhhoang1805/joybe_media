@@ -9,6 +9,7 @@ const nextConfig = {
     domains: [
       "scontent.fsgn5-13.fna.fbcdn.net",
       "avatars.githubusercontent.com",
+      "lh3.googleusercontent.com"
     ],
   },
 };
