@@ -3,7 +3,7 @@ import { useSession } from "next-auth/react";
 import Image from "next/image";
 import React, { useRef, useState } from "react";
 import { CommentIcon, LikeIcon } from "./Icon";
-
+import TimeAgo from 'timeago-react';
 const FeedDetails = (props) => {
   const { id, name, image, status, email, createAt, postImage, setHandleChange } = props;
   const [like, setLike] = useState(false);
@@ -35,7 +35,9 @@ const FeedDetails = (props) => {
           />
 
           <div className="font-medium">
-            {name} <p className="text-xs text-gray-500">{createAt}</p>
+            {name} <p className="text-xs text-gray-500 opacity-80">
+              <TimeAgo datetime={createAt} locale="vi"/>
+            </p>
           </div>
         </div>
         <p className="py-4">{status}</p>

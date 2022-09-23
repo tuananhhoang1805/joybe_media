@@ -1,20 +1,13 @@
 import { getSession } from "next-auth/react";
 import Head from "next/head";
-import { useRouter } from "next/router";
-import { useEffect } from "react";
 import { useSession } from "next-auth/react";
 import Layout from "../components/Layout";
 import Sidebar from "../components/Sidebar";
 import NewFeed from "../components/NewFeed";
-export default function Home({ session}) {
-  const router = useRouter();
-
+import Wigdet from "../components/Widget";
+import { connectToDatabase } from "../utils/mongose";
+export default function Home({ posts, users }) {
   const { status } = useSession();
-  useEffect(() => {
-    if (!session) {
-      router.push("/signin");
-    }
-  }, [session]);
 
   if (status === "loading") {
     return "Loading or not authenticated...";
@@ -29,9 +22,9 @@ export default function Home({ session}) {
 
       <Layout>
         <main className="flex justify-center mt-20 mx-auto gap-x-4 ">
-          <Sidebar className="flex-1"/>
-          <NewFeed className="flex-[2]"/>
-          {/* <Wigdet className="flex-1"/>  */}
+          <Sidebar className="flex-1" />
+          <NewFeed className="flex-[2]" posts={posts} />
+          <Wigdet className="flex-1" users={users}/>
         </main>
       </Layout>
     </div>
@@ -41,9 +34,34 @@ export default function Home({ session}) {
 export async function getServerSideProps(context) {
   const session = await getSession(context);
 
+  // check user
+  if (!session) {
+    return {
+      redirect: {
+        permanent: false,
+        destination: "/signin",
+      },
+    };
+  }
+
+  // Get Post in SSR
+  const { db } = await connectToDatabase();
+  const posts = await db
+    .collection("posts")
+    .find()
+    .sort({ timestamp: -1 })
+    .toArray();
+
+    // Get Users in SSR
+    const users = await db
+    .collection("users")
+    .find()
+    .toArray();
   return {
     props: {
       session,
+      posts: JSON.parse(JSON.stringify(posts)),
+      users: JSON.parse(JSON.stringify(users))
     },
   };
 }

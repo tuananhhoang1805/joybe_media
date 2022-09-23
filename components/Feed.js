@@ -2,15 +2,16 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import FeedDetails from "./FeedDetails";
 
-const Feed = ({ handleChange, setHandleChange }) => {
+const Feed = ({ handleChange, setHandleChange, posts }) => {
   const [realtimePost, setRealtimePost] = useState([]);
-
+  const [useSSRposts, setUseSSRposts] = useState(true);
   useEffect(() => {
     const fetchData = async () => {
       const data = await axios.get("/api/post", {
         headers: { "Content-Type": "application/json" },
       });
       setRealtimePost(data.data);
+      setUseSSRposts(false);
     };
     fetchData();
 
@@ -20,22 +21,37 @@ const Feed = ({ handleChange, setHandleChange }) => {
   }, [handleChange]);
   return (
     <div className="py-4">
-      {realtimePost.map((post) => {
-        console.log(post);
-        return (
-          <FeedDetails
-            key={post._id}
-            id={post._id}
-            name={post.name}
-            image={post.image}
-            status={post.status}
-            email={post.email}
-            createAt={post.createAt}
-            postImage={post.postImage}
-            setHandleChange={setHandleChange}
-          />
-        );
-      })}
+      {useSSRposts
+        ? posts.map((post) => {
+            return (
+              <FeedDetails
+                key={post._id}
+                id={post._id}
+                name={post.name}
+                image={post.image}
+                status={post.status}
+                email={post.email}
+                createAt={post.createAt}
+                postImage={post.postImage}
+                setHandleChange={setHandleChange}
+              />
+            );
+          })
+        : realtimePost.map((post) => {
+            return (
+              <FeedDetails
+                key={post._id}
+                id={post._id}
+                name={post.name}
+                image={post.image}
+                status={post.status}
+                email={post.email}
+                createAt={post.createAt}
+                postImage={post.postImage}
+                setHandleChange={setHandleChange}
+              />
+            );
+          })}
     </div>
   );
 };
