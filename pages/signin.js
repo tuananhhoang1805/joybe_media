@@ -34,9 +34,9 @@ export default function SignIn({ providers }) {
                   className="w-[95vw] max-w-[375px] flex justify-center items-center relative border border-gray-200 hover:border-gray-400 transition h-11"
                 >
                   <p>Sign in with {provider.name}</p>
-                  {provider.name === "Facebook" && (
+                  {/* {provider.name === "Facebook" && (
                     <FacebookIcon className="absolute top-1/2 -translate-y-1/2 left-3 w-6 h-6 " />
-                  )}
+                  )} */}
                   {provider.name === "GitHub" && (
                     <GithubIcon className="absolute top-1/2 -translate-y-1/2 left-3 w-6 h-6 " />
                   )}
