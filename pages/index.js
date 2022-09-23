@@ -7,11 +7,11 @@ import Layout from "../components/Layout";
 export default function Home({ session }) {
   const router = useRouter();
 
-  // useEffect(() => {
-  //   if (!session) {
-  //     router.push("/signin");
-  //   }
-  // }, [router, session]);
+  useEffect(() => {
+    if (!session) {
+      router.push("/signin");
+    }
+  }, [router, session]);
 
   return (
     <div className="bg-slate-100 min-h-screen">
