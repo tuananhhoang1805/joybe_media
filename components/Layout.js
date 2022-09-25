@@ -14,7 +14,6 @@ import HeaderIcon from "./HeaderIcon";
 
 const Layout = ({ children, title, description }) => {
   const { data: session, status, error } = useSession();
-  console.log(session);
   if (status === "loading") {
     return "Loading or not authenticated...";
   }

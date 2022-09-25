@@ -63,7 +63,7 @@ const Sidebar = () => {
     return "Loading or not authenticated...";
   }
   return (
-    <div className="mt-6 md:w-[275px] hidden md:flex bg-white rounded-lg flex-col">
+    <div className="mt-6 md:w-[275px] hidden md:flex bg-white rounded-lg flex-col h-[720px]">
       <div>
         <div className="flex justify-center items-center flex-col relative">
           <div className="relative h-12 bg-gradient-to-r from-sky-500 to-indigo-500 top-0 w-full rounded-t-lg">
