@@ -27,11 +27,13 @@ const dropIn = {
   },
 };
 
-const Modal = ({ handleClose }) => {
+const Modal = ({ handleClose, setModalOpen }) => {
   const { data: session } = useSession();
   const [imagePost, setImagePost] = useState();
+
+  console.log(imagePost);
   const inputRef = useRef();
-  const imageRef = useRef()
+  const imageRef = useRef();
   const handleaddPost = async (e) => {
     e.preventDefault();
 
@@ -56,20 +58,25 @@ const Modal = ({ handleClose }) => {
 
     inputRef.current.value = "";
     removeImage();
-    setModalOpen(false)
-  };
-
-  const uploadFile = (e) => {
-    const file = e.target.files[0];
-
-    if (file) {
-      file.preview = URL.createObjectURL(file);
-
-      setImagePost(file);
-    }
+    setModalOpen(false);
   };
   const removeImage = () => {
     setImagePost(null);
+  };
+  const uploadFile = async (e) => {
+    const files = e.target.files[0];
+
+    const formData = new FormData();
+
+    formData.append("file", files);
+    formData.append("upload_preset", "joybemedia");
+
+    const data = await axios.post(
+      "https://api.cloudinary.com/v1_1/drijoyyyh/image/upload",
+      formData
+    );
+
+    setImagePost(data.data);
   };
   return (
     <Backdrop onClick={handleClose}>
@@ -107,7 +114,7 @@ const Modal = ({ handleClose }) => {
                 <div className="flex flex-col filter items-center hover:brightness-110 transition duration-150 transform hover:scale-105 cursor-pointer p-6">
                   <Image
                     className="object-contain"
-                    src={imagePost.preview}
+                    src={imagePost.secure_url}
                     alt=""
                     height={120}
                     width={200}
@@ -128,10 +135,18 @@ const Modal = ({ handleClose }) => {
                   <Image src={videoImage} width={30} height={30} />
                   <p className="text-xs sm:text-sm xl:text-base">Live Video</p>
                 </div>
-                <div className="inputIcon" onClick={() => imageRef.current.click(0)}>
+                <div
+                  className="inputIcon"
+                  onClick={() => imageRef.current.click(0)}
+                >
                   <Image src={cameraImage} width={30} height={30} />
                   <p className="text-xs sm:text-sm xl:text-base">Photo/Video</p>
-                  <input type="file" hidden onChange={uploadFile} ref={imageRef}/>
+                  <input
+                    type="file"
+                    hidden
+                    onChange={uploadFile}
+                    ref={imageRef}
+                  />
                 </div>
                 <div className="inputIcon">
                   <Image src={emoji} width={30} height={30} />
@@ -154,5 +169,4 @@ const Modal = ({ handleClose }) => {
     </Backdrop>
   );
 };
-
 export default Modal;

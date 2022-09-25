@@ -45,7 +45,7 @@ const FeedDetails = (props) => {
         {postImage && (
           <div className="relative h-56 md:h-96 bg-white">
             <Image
-              src={postImage.preview}
+              src={postImage.secure_url}
               objectFit="cover"
               layout="fill"
               alt=""

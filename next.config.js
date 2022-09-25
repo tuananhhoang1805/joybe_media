@@ -9,7 +9,9 @@ const nextConfig = {
     domains: [
       "scontent.fsgn5-13.fna.fbcdn.net",
       "avatars.githubusercontent.com",
-      "lh3.googleusercontent.com"
+      "lh3.googleusercontent.com",
+      "joybe-media.vercel.app",
+      "res.cloudinary.com"
     ],
   },
 };
