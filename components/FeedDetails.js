@@ -43,11 +43,12 @@ const FeedDetails = (props) => {
         <p className="py-4">{status}</p>
 
         {postImage && (
-          <div className="relative h-56 md:h-96 bg-white">
+          <div className="relative bg-white ">
             <Image
               src={postImage.secure_url}
-              objectFit="cover"
-              layout="fill"
+              width={postImage.width}
+              height={postImage.height}
+              className="object-cover"
               alt=""
             />
           </div>
