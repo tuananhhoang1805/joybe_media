@@ -1,13 +1,16 @@
 /* eslint-disable jsx-a11y/alt-text */
 import { useSession } from "next-auth/react";
 import Image from "next/image";
+import { useRef } from "react";
 import { cameraImage, emoji, videoImage } from "../asset/image";
 
-const CreatePost = ({ setModalOpen }) => {
+const CreatePost = ({ setModalOpen , setText }) => {
   const { data: session } = useSession();
-
+  const inputRef = useRef()
   const openModal = () => {
+    setText("post")
     setModalOpen(true);
+    inputRef.current.blur();
   };
 
   return (
@@ -25,6 +28,7 @@ const CreatePost = ({ setModalOpen }) => {
         )}
         <form className="flex flex-1">
           <input
+          ref={inputRef}
             onClick={openModal}
             className="rounded-full h-12 bg-gray-100 flex-grow px-5 focus:outline-none"
             placeholder={`What 's on your mind, ${session?.user.name} ? `}

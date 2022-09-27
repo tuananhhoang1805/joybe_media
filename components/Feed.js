@@ -1,54 +1,39 @@
-import axios from "axios";
-import React, { useEffect, useState } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
 import FeedDetails from "./FeedDetails";
+import { useSelector, useDispatch } from "react-redux";
+import { useEffect, useState } from "react";
+import { getFeedPosts } from "../redux/postSlice";
 
-const Feed = ({ handleChange, setHandleChange, posts }) => {
-  const [realtimePost, setRealtimePost] = useState([]);
+const Feed = ({ posts, setText, setModalOpen }) => {
   const [useSSRposts, setUseSSRposts] = useState(true);
+  const dispatch = useDispatch();
+  const { feedPosts, isChange } = useSelector((state) => state.posts);
+  // console.log(feedPosts);
   useEffect(() => {
-    const fetchData = async () => {
-      const data = await axios.get("/api/post", {
-        headers: { "Content-Type": "application/json" },
-      });
-      setRealtimePost(data.data);
-      setUseSSRposts(false);
-    };
-    fetchData();
+    dispatch(getFeedPosts());
+    setUseSSRposts(false);
+  }, []);
 
-    return () => {
-      console.log("This will be logged on unmount");
-    };
-  }, [handleChange]);
   return (
     <div className="py-4">
       {useSSRposts
-        ? posts.map((post) => {
+        ? posts?.map((post) => {
             return (
               <FeedDetails
                 key={post._id}
-                id={post._id}
-                name={post.name}
-                image={post.image}
-                status={post.status}
-                email={post.email}
-                createAt={post.createAt}
-                postImage={post.postImage}
-                setHandleChange={setHandleChange}
+                setText={setText}
+                setModalOpen={setModalOpen}
+                {...post}
               />
             );
           })
-        : realtimePost.map((post) => {
+        : feedPosts.post?.map((post) => {
             return (
               <FeedDetails
                 key={post._id}
-                id={post._id}
-                name={post.name}
-                image={post.image}
-                status={post.status}
-                email={post.email}
-                createAt={post.createAt}
-                postImage={post.postImage}
-                setHandleChange={setHandleChange}
+                setText={setText}
+                setModalOpen={setModalOpen}
+                {...post}
               />
             );
           })}

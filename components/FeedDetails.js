@@ -1,65 +1,101 @@
-import axios from "axios";
+/* eslint-disable @next/next/no-img-element */
 import { useSession } from "next-auth/react";
-import Image from "next/image";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { CommentIcon, LikeIcon } from "./Icon";
-import TimeAgo from 'timeago-react';
+import TimeAgo from "timeago-react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  deletePost,
+  getFeedPosts,
+  likePost,
+  setPostId,
+} from "../redux/postSlice";
 const FeedDetails = (props) => {
-  const { id, name, image, status, email, createAt, postImage, setHandleChange } = props;
-  const [like, setLike] = useState(false);
+  const {
+    _id,
+    user,
+    status,
+    images,
+    comment,
+    like,
+    createdAt,
+    setText,
+    setModalOpen,
+  } = props;
+
   const textareaRef = useRef();
+  const dispatch = useDispatch();
 
+  const [liked, setLiked] = useState(false);
   const { data: session } = useSession();
-  const handleLike = () => {
-    setLike((prev) => !prev);
+
+  useEffect(() => {
+    if (like?.find((like) => like._id === session.user.id)) {
+      setLiked(true);
+    }
+  }, [like, session.user.id]);
+  const handleLike = async () => {
+    console.log(_id);
+    if (like) {
+      setLiked(false);
+    } else {
+      setLiked(true);
+      await dispatch(likePost({ id: _id, user_id: session.user.id }));
+      await dispatch(getFeedPosts());
+    }
   };
 
-  const deletePost = async () => {
-    await axios.delete(`/api/post/${id}`, {
-      headers: { "Content-Type": "application/json" },
-    });
-
-    setHandleChange(prev => !prev)
+  const handleDeletePost = async (id) => {
+    await dispatch(deletePost(id));
+    await dispatch(getFeedPosts());
   };
 
+  const handleUpdatePost = async (id) => {
+    setText("edit");
+    setModalOpen(true);
+    dispatch(setPostId(id));
+  };
   return (
     <div className="flex flex-col py-4 overflow-hidden relative">
       <div className="p-5 bg-white rounded-2xl shadow-sm">
         <div className="flex items-center space-x-2">
-          <Image
-            src={image}
-            alt={name}
+          <img
+            src={session.user.image}
+            alt={session.user.name}
             width={40}
             height={40}
             className="rounded-full"
           />
 
           <div className="font-medium">
-            {name} <p className="text-xs text-gray-500 opacity-80">
-              <TimeAgo datetime={createAt} locale="vi"/>
+            {session.user.name}
+            <p className="text-xs text-gray-500 opacity-80">
+              <TimeAgo datetime={createdAt} locale="vi" />
             </p>
           </div>
         </div>
         <p className="py-4">{status}</p>
 
-        {postImage && (
-          <div className="relative bg-white ">
-            <Image
-              src={postImage.secure_url}
-              width={postImage.width}
-              height={postImage.height}
-              className="object-cover"
-              alt=""
-            />
-          </div>
-        )}
+        {images?.map((image) => {
+          return (
+            <div className="relative bg-white" key={image.public_id}>
+              <img
+                src={image.url}
+                width={image.width}
+                height={image.height}
+                className="object-cover"
+                alt=""
+              />
+            </div>
+          );
+        })}
 
         <div className="flex items-center space-x-2 mt-2">
           <span onClick={handleLike} className="active:scale-75 duration-200">
             <LikeIcon
               className="h-8 w-8"
-              fill={like ? "red" : "none"}
-              stroke={like ? "red" : "currentColor"}
+              fill={liked ? "red" : "none"}
+              stroke={liked ? "red" : "currentColor"}
             />
           </span>
           <span
@@ -83,9 +119,10 @@ const FeedDetails = (props) => {
         </div>
       </div>
 
-      {session?.user?.email === email ? (
+      {session?.user?.id === user ? (
         <div className="absolute top-10 right-2 cursor-pointer">
-          <p onClick={deletePost}>Detele Post</p>
+          <p onClick={() => handleUpdatePost(_id)}>Edit Post</p>
+          <p onClick={() => handleDeletePost(_id)}>Detele Post</p>
         </div>
       ) : (
         <></>

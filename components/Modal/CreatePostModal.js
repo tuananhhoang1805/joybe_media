@@ -3,9 +3,10 @@ import { motion } from "framer-motion";
 import Backdrop from "./Backdrop";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
-import { cameraImage, emoji, videoImage } from "../asset/image";
-import axios from "axios";
+import { cameraImage, emoji, videoImage } from "../../asset/image";
 import { useRef, useState } from "react";
+import { changePost, createPost, getFeedPosts } from "../../redux/postSlice";
+import { useDispatch } from "react-redux";
 const dropIn = {
   hidden: {
     y: "-100vh",
@@ -27,57 +28,56 @@ const dropIn = {
   },
 };
 
-const Modal = ({ handleClose, setModalOpen }) => {
+const CreatePostModal = ({ handleClose, setModalOpen }) => {
   const { data: session } = useSession();
-  const [imagePost, setImagePost] = useState();
-
-  console.log(imagePost);
-  const inputRef = useRef();
+  const dispatch = useDispatch();
+  const [imagePost, setImagePost] = useState([]);
+  const [postItems, setPostItems] = useState({
+    status: "",
+    images: [],
+    user: {},
+  });
   const imageRef = useRef();
+
   const handleaddPost = async (e) => {
     e.preventDefault();
-
-    if (!inputRef.current.value) return;
-
-    try {
-      await axios({
-        method: "POST",
-        url: "/api/post",
-        data: {
-          name: session.user.name,
-          status: inputRef.current.value,
-          email: session.user.email,
-          image: session.user.image,
-          postImage: imagePost,
-          createAt: new Date().toString(),
-        },
-      });
-    } catch (error) {
-      console.log(error);
-    }
-
-    inputRef.current.value = "";
-    removeImage();
+    await dispatch(createPost(postItems));
     setModalOpen(false);
+    await dispatch(getFeedPosts());
+    await dispatch(getFeedPosts());
   };
-  const removeImage = () => {
-    setImagePost(null);
+
+  const handlechangePost = (e) => {
+    setPostItems({
+      ...postItems,
+      status: e.target.value,
+      user_id: session.user.id,
+    });
   };
   const uploadFile = async (e) => {
-    const files = e.target.files[0];
+    setPostItems({ ...postItems, images: [] });
+    const files = Array.from(e.target.files);
 
-    const formData = new FormData();
+    if (files.length > 4) {
+      return;
+    }
 
-    formData.append("file", files);
-    formData.append("upload_preset", "joybemedia");
+    files.forEach((file) => {
+      const reader = new FileReader();
 
-    const data = await axios.post(
-      "https://api.cloudinary.com/v1_1/drijoyyyh/image/upload",
-      formData
-    );
-
-    setImagePost(data.data);
+      reader.onload = () => {
+        if (reader.readyState === 2) {
+          setImagePost((prev) => [...prev, reader.result]);
+          setPostItems({
+            ...postItems,
+            images: [...postItems.images, reader.result],
+          });
+        }
+      };
+      reader.readAsDataURL(file);
+    });
   };
+
   return (
     <Backdrop onClick={handleClose}>
       <motion.div
@@ -87,9 +87,9 @@ const Modal = ({ handleClose, setModalOpen }) => {
         animate="visible"
         exit="exit"
       >
-        <div className="bg-white w-[500px] min-h-[428px] max-h-[80vh] rounded-md relative flex flex-col">
+        <div className="bg-white w-[528px] min-h-[428px] max-h-[80vh] rounded-md relative flex flex-col">
           <div className="text-center p-4 border-b-2">
-            <span className="font-bold text-[1.25rem]">Create Post</span>
+            <span className="font-bold text-[1.25rem]">Tạo bài viết</span>
           </div>
           <div className="p-4">
             <div className="flex gap-2 mb-4">
@@ -104,30 +104,37 @@ const Modal = ({ handleClose, setModalOpen }) => {
               <p className="font-medium">{session?.user.name}</p>
             </div>
             <textarea
-              ref={inputRef}
               placeholder={`What's on your mind ,${session.user.name} ?`}
               rows="4"
               className="w-full focus:outline-none text-[1.5rem] font-normal"
-            ></textarea>
-            <div className="flex">
-              {imagePost && (
-                <div className="flex flex-col filter items-center hover:brightness-110 transition duration-150 transform hover:scale-105 cursor-pointer p-6">
-                  <Image
-                    className="object-contain"
-                    src={imagePost.secure_url}
-                    alt=""
-                    height={120}
-                    width={200}
-                    layout="fixed"
-                  />
-                  <p
-                    className="text-xs text-red-500 text-center"
-                    onClick={removeImage}
+              onChange={handlechangePost}
+            />
+            <div className="flex flex-wrap">
+              {imagePost.map((image, idx) => {
+                return (
+                  <div
+                    key={idx}
+                    className="flex flex-col filter items-center hover:brightness-110 transition duration-150 transform hover:scale-105 cursor-pointer p-6"
                   >
-                    Remove
-                  </p>
-                </div>
-              )}
+                    <Image
+                      className="object-contain"
+                      src={image}
+                      alt=""
+                      height={120}
+                      width={200}
+                      layout="fixed"
+                    />
+                    <p
+                      className="text-xs text-red-500 text-center"
+                      onClick={() =>
+                        setImagePost(imagePost.filter((_, i) => i !== idx))
+                      }
+                    >
+                      Remove
+                    </p>
+                  </div>
+                );
+              })}
             </div>
             <div>
               <div className="flex justify-evenly p-3 border-t">
@@ -143,6 +150,8 @@ const Modal = ({ handleClose, setModalOpen }) => {
                   <p className="text-xs sm:text-sm xl:text-base">Photo/Video</p>
                   <input
                     type="file"
+                    multiple
+                    maxLength={4}
                     hidden
                     onChange={uploadFile}
                     ref={imageRef}
@@ -169,4 +178,4 @@ const Modal = ({ handleClose, setModalOpen }) => {
     </Backdrop>
   );
 };
-export default Modal;
+export default CreatePostModal;

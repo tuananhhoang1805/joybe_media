@@ -1,9 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { root } from "postcss";
-
-
+import postReducer from "./postSlice";
+import userReducer from "./userSlice";
 const store = configureStore({
-    reducer: root
-})
+  reducer: {
+    posts: postReducer,
+    users: userReducer,
+  },
+});
 
-export default store
+export default store;
