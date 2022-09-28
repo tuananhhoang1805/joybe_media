@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @next/next/no-img-element */
 import { useSession } from "next-auth/react";
 import React, { useEffect, useRef, useState } from "react";
@@ -9,6 +10,7 @@ import {
   getFeedPosts,
   likePost,
   setPostId,
+  unlikePost,
 } from "../redux/postSlice";
 const FeedDetails = (props) => {
   const {
@@ -17,30 +19,33 @@ const FeedDetails = (props) => {
     status,
     images,
     comment,
-    like,
+    likes,
     createdAt,
     setText,
     setModalOpen,
   } = props;
-
   const textareaRef = useRef();
-  const dispatch = useDispatch();
 
-  const [liked, setLiked] = useState(false);
-  const { data: session } = useSession();
+  console.log(likes);
+  const dispatch = useDispatch();
+   const { data: session } = useSession();
 
   useEffect(() => {
-    if (like?.find((like) => like._id === session.user.id)) {
+    if (likes?.find((like) => like._id === session?.user.id)) {
       setLiked(true);
     }
-  }, [like, session.user.id]);
+  }, [likes, session?.user.id]);
+  const [liked, setLiked] = useState(false);
+ 
+
   const handleLike = async () => {
-    console.log(_id);
-    if (like) {
+    if (liked) {
+      await dispatch(unlikePost({ id: _id, user_id: session?.user.id }));
+      await dispatch(getFeedPosts());
       setLiked(false);
     } else {
       setLiked(true);
-      await dispatch(likePost({ id: _id, user_id: session.user.id }));
+      await dispatch(likePost({ id: _id, user_id: session?.user.id }));
       await dispatch(getFeedPosts());
     }
   };
@@ -60,15 +65,15 @@ const FeedDetails = (props) => {
       <div className="p-5 bg-white rounded-2xl shadow-sm">
         <div className="flex items-center space-x-2">
           <img
-            src={session.user.image}
-            alt={session.user.name}
+            src={user?.image}
+            alt={user?.name}
             width={40}
             height={40}
             className="rounded-full"
           />
 
           <div className="font-medium">
-            {session.user.name}
+            {user?.name}
             <p className="text-xs text-gray-500 opacity-80">
               <TimeAgo datetime={createdAt} locale="vi" />
             </p>
@@ -106,6 +111,7 @@ const FeedDetails = (props) => {
           </span>
         </div>
 
+        <div>{likes.length} Like</div>
         <div className="flex items-center">
           <textarea
             ref={textareaRef}

@@ -92,9 +92,27 @@ export const updatePost = createAsyncThunk(
 
 export const likePost = createAsyncThunk(
   "posts/likePost",
-  async ({ id }, thunkApi) => {
+  async ({ id, user_id }, thunkApi) => {
     try {
-      const res = await axios.patch(`${server}/api/post/${id}/like`);
+      const res = await axios.patch(`${server}/api/post/${id}/like`, {
+        user_id,
+      });
+      console.log(res.data);
+      return res.data;
+    } catch (error) {
+      const message = error.response.data.message;
+      return thunkApi.rejectWithValue(message);
+    }
+  }
+);
+
+export const unlikePost = createAsyncThunk(
+  "posts/unlikePost",
+  async ({ id, user_id }, thunkApi) => {
+    try {
+      const res = await axios.patch(`${server}/api/post/${id}/unlike`, {
+        user_id,
+      });
       console.log(res.data);
       return res.data;
     } catch (error) {
@@ -194,10 +212,25 @@ export const postSlice = createSlice({
         console.log(action.payload);
         state.isLoading = false;
         state.feedPosts = state.feedPosts.post.map((post) =>
-          post._id === action.payload.id ? action.payload : post
+          post._id === action.payload.id ? action.payload.post : post
         );
       })
       .addCase(likePost.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+      })
+      .addCase(unlikePost.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(unlikePost.fulfilled, (state, action) => {
+        console.log(action.payload);
+        state.isLoading = false;
+        state.feedPosts = state.feedPosts.post.map((post) =>
+          post._id === action.payload.id ? action.payload.post : post
+        );
+      })
+      .addCase(unlikePost.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;

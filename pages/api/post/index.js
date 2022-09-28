@@ -13,7 +13,9 @@ export default async function handler(req, res) {
   await dbconnect();
   if (method === "GET") {
     try {
-      const post = await Post.find({}).sort({ createdAt: -1 });
+      const post = await Post.find({})
+        .sort({ createdAt: -1 })
+        .populate("user likes", "image , name  ,email");
       res.status(200).json({ post });
     } catch (error) {
       res.status(500).json({ message: error.message });
@@ -66,17 +68,13 @@ export default async function handler(req, res) {
     });
 
     await post.save();
-    res
-      .status(201)
-      .json({ message: "Tạo Post Thành Công", ...post._doc });
+    res.status(201).json({ message: "Tạo Post Thành Công", ...post._doc });
 
     try {
     } catch (error) {
       res.status(500).json({ message: error });
     }
   }
-
- 
 }
 
 export const config = {

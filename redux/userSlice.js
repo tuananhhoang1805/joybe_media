@@ -10,17 +10,15 @@ const initialState = {
   searchBar: false,
   posts: [],
   users: [],
-};
-
-export const getUserById = createAsyncThunk(
-  "user/getUserById",
+  singleUser : null,
+}
+export const getSingleUser = createAsyncThunk(
+  "user/getSingleUser",
   async (id, thunkApi) => {
     try {
       const res = await axios.get(`${server}/api/user/${id}`, {
         headers: { "Content-Type": "application/json" },
       });
-
-      console.log(res.data);
       return res.data;
     } catch (error) {
       const message = error.response.data.message;
@@ -42,14 +40,14 @@ const userSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(getUserById.pending, (state) => {
+      .addCase(getSingleUser.pending, (state) => {
         state.isLoading = true;
       })
-      .addCase(getUserById.fulfilled, (state, action) => {
+      .addCase(getSingleUser.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.user = action.payload;
+        state.singleUser = action.payload;
       })
-      .addCase(getUserById.rejected, (state, action) => {
+      .addCase(getSingleUser.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;
