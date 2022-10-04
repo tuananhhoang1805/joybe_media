@@ -1,5 +1,4 @@
-import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import UserFollow from "./UserFollow";
 
 const Wigdet = ({ users }) => {
@@ -9,7 +8,7 @@ const Wigdet = ({ users }) => {
     <div className="mt-6 md:w-[275px] hidden md:flex bg-white rounded-lg flex-col overflow-y-scroll h-[320px]">
       <h1 className="font-medium text-center p-2">Who to follow</h1>
 
-      {/* {users.slice(0, index).map((user) => {
+      {users.slice(0, index).map((user) => {
         return (
           <UserFollow
             key={user._id}
@@ -18,7 +17,7 @@ const Wigdet = ({ users }) => {
             image={user.image}
           />
         );
-      })} */}
+      })}
 
       <h1
         className="font-medium text-center p-2 text-blue-500 cursor-pointer "

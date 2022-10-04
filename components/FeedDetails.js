@@ -2,57 +2,64 @@
 /* eslint-disable @next/next/no-img-element */
 import { useSession } from "next-auth/react";
 import React, { useEffect, useRef, useState } from "react";
-import { CommentIcon, LikeIcon } from "./Icon";
+import { CommentIcon, LikeIcon, UnLikeIcon } from "./Icon";
 import TimeAgo from "timeago-react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   deletePost,
   getFeedPosts,
+  getSinglePost,
   likePost,
   setPostId,
   unlikePost,
 } from "../redux/postSlice";
+import { createComment } from "../redux/commetSlice";
 const FeedDetails = (props) => {
   const {
     _id,
     user,
     status,
     images,
-    comment,
+    comments,
     likes,
     createdAt,
     setText,
     setModalOpen,
   } = props;
   const textareaRef = useRef();
-
-  console.log(likes);
   const dispatch = useDispatch();
-   const { data: session } = useSession();
 
+  const { data: session } = useSession();
+  const [liked, setLiked] = useState(false);
+  const [showMoreComemmet, setShowMoreComemmet] = useState(false);
+  const [contentComment, setContentComment] = useState({
+    postId: _id,
+    content: "",
+    postUserId: user._id,
+    user_id: session.user.id,
+  });
   useEffect(() => {
     if (likes?.find((like) => like._id === session?.user.id)) {
       setLiked(true);
     }
-  }, [likes, session?.user.id]);
-  const [liked, setLiked] = useState(false);
- 
+  }, [likes]);
 
+  useEffect(() => {
+    dispatch(getFeedPosts());
+  }, [liked]);
   const handleLike = async () => {
     if (liked) {
-      await dispatch(unlikePost({ id: _id, user_id: session?.user.id }));
-      await dispatch(getFeedPosts());
       setLiked(false);
+      dispatch(unlikePost({ id: _id, user_id: session?.user.id }));
     } else {
       setLiked(true);
-      await dispatch(likePost({ id: _id, user_id: session?.user.id }));
-      await dispatch(getFeedPosts());
+      dispatch(likePost({ id: _id, user_id: session?.user.id }));
     }
   };
 
   const handleDeletePost = async (id) => {
-    await dispatch(deletePost(id));
-    await dispatch(getFeedPosts());
+    dispatch(deletePost(id));
+    dispatch(getFeedPosts());
   };
 
   const handleUpdatePost = async (id) => {
@@ -60,9 +67,29 @@ const FeedDetails = (props) => {
     setModalOpen(true);
     dispatch(setPostId(id));
   };
+
+  const handleCancelComment = () => {
+    setContentComment({
+      ...contentComment,
+      content: "",
+    });
+  };
+  const handleChangeComment = (e) => {
+    setContentComment({
+      ...contentComment,
+      content: e.target.value,
+    });
+  };
+  const handleComment = async (e) => {
+    e.preventDefault();
+    await dispatch(createComment(contentComment));
+    await dispatch(getFeedPosts());
+
+    textareaRef.current.value = ""
+  };
   return (
     <div className="flex flex-col py-4 overflow-hidden relative">
-      <div className="p-5 bg-white rounded-2xl shadow-sm">
+      <div className="p-5 bg-white rounded-2xl shadow-md">
         <div className="flex items-center space-x-2">
           <img
             src={user?.image}
@@ -103,6 +130,7 @@ const FeedDetails = (props) => {
               stroke={liked ? "red" : "currentColor"}
             />
           </span>
+
           <span
             className="hover:opacity-40"
             onClick={() => textareaRef.current.focus()}
@@ -111,7 +139,9 @@ const FeedDetails = (props) => {
           </span>
         </div>
 
-        <div>{likes.length} Like</div>
+        <div>
+          {likes.length > 1 ? `${likes.length} likes` : `${likes.length} like`}{" "}
+        </div>
         <div className="flex items-center">
           <textarea
             ref={textareaRef}
@@ -119,13 +149,47 @@ const FeedDetails = (props) => {
             className="flex flex-grow max-h-[80px] resize-none w-full focus:border-none p-2 focus:outline-none whitespace-normal"
             autoComplete="off"
             autoCorrect="off"
+            onChange={handleChangeComment}
           ></textarea>
 
-          <h2 className="font-medium cursor-pointer">Post</h2>
+          <h2 className="font-medium cursor-pointer" onClick={handleComment}>
+            Post
+          </h2>
         </div>
+
+        {showMoreComemmet ? (
+          <div>
+            {comments?.map((comment) => {
+              return (
+                <div key={comment._id} className="flex flex-col w-max">
+                  <div className="flex gap-x-4 p-[12px] shadow-md bg-slate-50">
+                    <p className="font-bold text-[16px]">
+                      {comment.user.name} :
+                    </p>
+                    <span>{comment.content}</span>
+                  </div>
+
+                  <div className="flex cursor-pointer gap-x-4">
+                    <p>Like</p>
+                    {session?.user?.id === comment.user._id && <p>Delete</p>}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ) : comments.length > 0 ? (
+          <div
+            onClick={() => setShowMoreComemmet(true)}
+            className="cursor-pointer"
+          >
+            {` More ${comments.length} comments in there...`}
+          </div>
+        ) : (
+          <></>
+        )}
       </div>
 
-      {session?.user?.id === user ? (
+      {session?.user?.id === user._id ? (
         <div className="absolute top-10 right-2 cursor-pointer">
           <p onClick={() => handleUpdatePost(_id)}>Edit Post</p>
           <p onClick={() => handleDeletePost(_id)}>Detele Post</p>

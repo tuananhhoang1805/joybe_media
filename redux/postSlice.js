@@ -162,7 +162,7 @@ export const postSlice = createSlice({
       .addCase(getFeedPosts.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
-        state.message = action.payload.post;
+        state.message = action.payload;
       })
       .addCase(createPost.pending, (state) => {
         state.isLoading = true;
@@ -224,7 +224,6 @@ export const postSlice = createSlice({
         state.isLoading = true;
       })
       .addCase(unlikePost.fulfilled, (state, action) => {
-        console.log(action.payload);
         state.isLoading = false;
         state.feedPosts = state.feedPosts.post.map((post) =>
           post._id === action.payload.id ? action.payload.post : post

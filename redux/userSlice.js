@@ -10,8 +10,8 @@ const initialState = {
   searchBar: false,
   posts: [],
   users: [],
-  singleUser : null,
-}
+  singleUser: null,
+};
 export const getSingleUser = createAsyncThunk(
   "user/getSingleUser",
   async (id, thunkApi) => {
@@ -19,6 +19,19 @@ export const getSingleUser = createAsyncThunk(
       const res = await axios.get(`${server}/api/user/${id}`, {
         headers: { "Content-Type": "application/json" },
       });
+      return res.data;
+    } catch (error) {
+      const message = error.response.data.message;
+      return thunkApi.rejectWithValue(message);
+    }
+  }
+);
+
+export const getUserPost = createAsyncThunk(
+  "user/getUserPost",
+  async (id, thunkApi) => {
+    try {
+      const res = await axios.get(`${server}/api/post/userpost/${id}`);
       return res.data;
     } catch (error) {
       const message = error.response.data.message;
@@ -48,6 +61,18 @@ const userSlice = createSlice({
         state.singleUser = action.payload;
       })
       .addCase(getSingleUser.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+      })
+      .addCase(getUserPost.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(getUserPost.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.posts = action.payload;
+      })
+      .addCase(getUserPost.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;

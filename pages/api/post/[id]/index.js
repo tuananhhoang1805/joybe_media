@@ -14,7 +14,15 @@ export default async function handler(req, res) {
   await dbconnect();
   if (method === "GET") {
     try {
-      const post = await Post.findById({ _id: req.query.id }).populate("user likes" , "image , email , name");
+      const post = await Post.findById({ _id: req.query.id })
+        .populate("user likes", "image , name  ,email , followers")
+        .populate({
+          path: "comments",
+          populate: {
+            path: "user likes",
+            model: "User",
+          },
+        });
       res.status(200).json({ post });
     } catch (error) {
       res.status(500).json({ message: error.message });
@@ -53,7 +61,7 @@ export default async function handler(req, res) {
       await Post.findOneAndDelete({ _id: req.query.id });
 
       if (post.images.lenght > 0) {
-        for (let i = 0; i <post.images.lenght ; i++) {
+        for (let i = 0; i < post.images.lenght; i++) {
           await cloudinary.v2.uploader.destroy(post.images[i].public_id);
         }
       }

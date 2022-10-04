@@ -17,7 +17,10 @@ export default async function handler(req, res) {
 
       const like = await Post.findOneAndUpdate(
         { _id: req.query.id },
-        { $push: { likes: req.body.user_id } },
+        {
+          $push: { likes: req.body.user_id },
+          $inc: { likeCount: 1, score: 1 },
+        },
         {
           new: true,
         }

@@ -1,7 +1,9 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import {
   accountImage,
   earthImage,
@@ -11,6 +13,7 @@ import {
   notiImage,
   settingImage,
 } from "../asset/image";
+import { getSingleUser, getUserPost } from "../redux/userSlice";
 import SidebarIcon from "./SidebarIcon";
 
 const Sidebar = () => {
@@ -59,6 +62,30 @@ const Sidebar = () => {
     },
   ];
   const { data: session, status } = useSession();
+  const { posts, singleUser } = useSelector((state) => state.users);
+  const [likeCount, setCountLike] = useState(0);
+  const dispatch = useDispatch();
+  useEffect(() => {
+    const userPost = async () => {
+      await dispatch(getUserPost(session?.user.id));
+
+      await dispatch(getSingleUser(session?.user.id));
+    };
+    userPost();
+  }, [session?.user.id]);
+
+  useEffect(() => {
+    const like = posts?.post?.map((like) => {
+      return like.likes.length;
+    });
+    if (like?.length > 0) {
+      const count = like?.reduce((total, currentvalue) => {
+        return total + currentvalue;
+      });
+      setCountLike(count);
+    }
+  }, [posts]);
+
   if (status === "loading") {
     return "Loading or not authenticated...";
   }
@@ -90,17 +117,19 @@ const Sidebar = () => {
 
           <div className="flex justify-around items-center w-full p-4">
             <div className="flex flex-col items-center">
-              <p className="font-bold text-[16px]">256</p>
+              <p className="font-bold text-[16px]">{posts.result}</p>
               <span className="text-[14px] text-[#999]">Post</span>
             </div>
             <span className="block h-10 w-[1px] bg-[#cac8c8]"></span>
             <div className="flex flex-col items-center">
-              <p className="font-bold text-[16px]">2.5K</p>
-              <span className="text-[14px] text-[#999]">Follower</span>
+              <p className="font-bold text-[16px]">{likeCount}</p>
+              <span className="text-[14px] text-[#999]">Like</span>
             </div>
             <span className="block h-10 w-[1px] bg-[#cac8c8]"></span>
             <div className="flex flex-col items-center">
-              <p className="font-bold text-[16px]">365</p>
+              <p className="font-bold text-[16px]">
+                {singleUser?.users.followers.length}
+              </p>
               <span className="text-[14px] text-[#999]">Following</span>
             </div>
           </div>
@@ -120,7 +149,7 @@ const Sidebar = () => {
         })}
       </div>
       <div>
-        <Link href={`${session?.user?.id}`}>
+        <Link href={`user/${session?.user?.id}`}>
           <p className="text-center p-2 text-blue-500 cursor-pointer font-medium">
             View Profile
           </p>

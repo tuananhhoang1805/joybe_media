@@ -20,7 +20,7 @@ const Layout = ({ children, title, description }) => {
   return (
     <div>
       <Head>
-        <title>{title ? `${title}` : "Yoybe"}</title>
+        <title>{title ? `${title}` : "Joybe"}</title>
         {description && <meta name="description" content={description}></meta>}
       </Head>
       <div className="flex justify-center items-center fixed w-full top-0 z-50 bg-white p-2 lg:px-5 shadow-md">
