@@ -1,31 +1,35 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import FeedDetails from "./FeedDetails";
 import { useSelector, useDispatch } from "react-redux";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { getFeedPosts } from "../redux/postSlice";
 
-const Feed = ({setText, setModalOpen, posts }) => {
+const Feed = () => {
   const dispatch = useDispatch();
   const { feedPosts } = useSelector((state) => state.posts);
-
+  const [limitPost, setLimitPost] = useState(5);
 
   useEffect(() => {
-    dispatch(getFeedPosts())
-  },[])
+    const loadmore = () => {
+      if (
+        window.innerHeight + document.documentElement.scrollTop + 1 >=
+        document.scrollingElement.scrollHeight
+      ) {
+        setLimitPost((prev) => prev + 5);
+      }
+    };
 
-  console.log(posts);
-  console.log(feedPosts);
+    window.addEventListener("scroll", loadmore);
+
+    return () => window.removeEventListener("scroll", loadmore);
+  }, [limitPost]);
+  useEffect(() => {
+    dispatch(getFeedPosts());
+  }, []);
   return (
     <div className="py-4">
-      {posts?.map((post) => {
-        return (
-          <FeedDetails
-            key={post._id}
-            setText={setText}
-            setModalOpen={setModalOpen}
-            {...post}
-          />
-        );
+      {feedPosts.post?.slice(0, limitPost).map((post) => {
+        return <FeedDetails key={post._id} {...post} />;
       })}
     </div>
   );

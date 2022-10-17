@@ -1,19 +1,16 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable jsx-a11y/alt-text */
 import { motion } from "framer-motion";
-import Backdrop from "./Backdrop";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
-import { cameraImage, emoji, videoImage } from "../../asset/image";
-import axios from "axios";
 import { useEffect, useRef, useState } from "react";
-import {
-  createPost,
-  getFeedPosts,
-  getSinglePost,
-  updatePost,
-} from "../../redux/postSlice";
 import { useDispatch, useSelector } from "react-redux";
+
+import Backdrop from "./Backdrop";
+import { getFeedPosts, getSinglePost, updatePost } from "../../redux/postSlice";
+import { closePost } from "../../redux/modalSlice";
+import toast from "react-hot-toast";
+
 const dropIn = {
   hidden: {
     y: "-100vh",
@@ -35,11 +32,11 @@ const dropIn = {
   },
 };
 
-const EditPostModel = ({ handleClose, setModalOpen }) => {
+const EditPostModel = ({ handleClose }) => {
   const { data: session } = useSession();
-  const { singlePost, isLoading, isError, postId } = useSelector(
-    (state) => state.posts
-  );
+  const { isLoading, postId, message } = useSelector((state) => state.posts);
+
+
   const dispatch = useDispatch();
   const inputRef = useRef();
 
@@ -47,22 +44,23 @@ const EditPostModel = ({ handleClose, setModalOpen }) => {
     dispatch(getSinglePost(postId));
     inputRef.current.focus();
   }, []);
-  console.log(singlePost);
-  console.log(postId);
   const [editValue, setEditValue] = useState("");
-  // useEffect(() => {
-  //   dispatch(getSinglePost())
-  // },[])
   const handleUpdatePost = async (e) => {
     e.preventDefault();
+
     await dispatch(updatePost({ id: postId, status: editValue }));
+    toast.success("Chỉnh sửa bài viết thành công", { position: "bottom-right" });
     await dispatch(getFeedPosts());
-    setModalOpen(false);
+    await dispatch(closePost());
   };
 
   const handleEditPost = (e) => {
     setEditValue(e.target.value);
   };
+
+  if (isLoading) {
+    return <div>Loading</div>;
+  }
   return (
     <Backdrop onClick={handleClose}>
       <motion.div
@@ -74,7 +72,7 @@ const EditPostModel = ({ handleClose, setModalOpen }) => {
       >
         <div className="bg-white w-[500px] min-h-[328px] max-h-[80vh] rounded-md relative flex flex-col">
           <div className="text-center p-4 border-b-2">
-            <span className="font-bold text-[1.25rem]">Edit Post</span>
+            <span className="font-bold text-[1.25rem]">Chỉnh sửa bài viết</span>
           </div>
           <div className="p-4">
             <div className="flex gap-2 mb-4">
@@ -95,13 +93,13 @@ const EditPostModel = ({ handleClose, setModalOpen }) => {
               className="w-full focus:outline-none text-[1.5rem] font-normal"
               onChange={handleEditPost}
             />
-            
+
             <button
               type="submit"
               className=" w-full text-center bg-blue-600 p-2 rounded-lg text-white font-medium"
               onClick={handleUpdatePost}
             >
-              Save
+              Lưu
             </button>
           </div>
         </div>

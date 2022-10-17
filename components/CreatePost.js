@@ -2,14 +2,16 @@
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useRef } from "react";
+import { useDispatch } from "react-redux";
 import { cameraImage, emoji, videoImage } from "../asset/image";
+import { openCreatePost } from "../redux/modalSlice";
 
-const CreatePost = ({ setModalOpen , setText }) => {
+const CreatePost = () => {
   const { data: session } = useSession();
+  const dispatch = useDispatch()
   const inputRef = useRef()
   const openModal = () => {
-    setText("post")
-    setModalOpen(true);
+    dispatch(openCreatePost())
     inputRef.current.blur();
   };
 

@@ -1,12 +1,17 @@
 /* eslint-disable jsx-a11y/alt-text */
 import { motion } from "framer-motion";
-import Backdrop from "./Backdrop";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect, useRef, useState } from "react";
+import toast from "react-hot-toast";
+import "react-loading-skeleton/dist/skeleton.css";
+
+import Backdrop from "./Backdrop";
 import { cameraImage, emoji, videoImage } from "../../asset/image";
-import { useRef, useState } from "react";
-import { changePost, createPost, getFeedPosts } from "../../redux/postSlice";
-import { useDispatch } from "react-redux";
+
+import { createPost, getFeedPosts } from "../../redux/postSlice";
+import { closePost } from "../../redux/modalSlice";
 const dropIn = {
   hidden: {
     y: "-100vh",
@@ -28,7 +33,7 @@ const dropIn = {
   },
 };
 
-const CreatePostModal = ({ handleClose, setModalOpen }) => {
+const CreatePostModal = ({ handleClose }) => {
   const { data: session } = useSession();
   const dispatch = useDispatch();
   const [imagePost, setImagePost] = useState([]);
@@ -37,12 +42,22 @@ const CreatePostModal = ({ handleClose, setModalOpen }) => {
     images: [],
     user: {},
   });
+
+  const { isError } = useSelector((state) => state.posts);
   const imageRef = useRef();
+
+  useEffect(() => {
+    toast.error(isError, { position: "bottom-right" });
+  }, [isError]);
+
 
   const handleaddPost = async (e) => {
     e.preventDefault();
+    toast.loading("Loading...", { position: "bottom-right" });
     await dispatch(createPost(postItems));
-    setModalOpen(false);
+    toast.dismiss();
+    toast.success("Tạo bài viết thành công", { position: "bottom-right" });
+    dispatch(closePost());
     await dispatch(getFeedPosts());
     await dispatch(getFeedPosts());
   };
@@ -77,7 +92,6 @@ const CreatePostModal = ({ handleClose, setModalOpen }) => {
       reader.readAsDataURL(file);
     });
   };
-
   return (
     <Backdrop onClick={handleClose}>
       <motion.div
@@ -165,13 +179,15 @@ const CreatePostModal = ({ handleClose, setModalOpen }) => {
                 </div>
               </div>
             </div>
-            <button
-              type="submit"
-              className=" w-full text-center bg-blue-600 p-2 rounded-lg text-white font-medium"
-              onClick={handleaddPost}
-            >
-              Post
-            </button>
+            {postItems.status && (
+              <button
+                type="submit"
+                className=" w-full text-center bg-blue-600 p-2 rounded-lg text-white font-medium"
+                onClick={handleaddPost}
+              >
+                <div>Tạo</div>
+              </button>
+            )}
           </div>
         </div>
       </motion.div>

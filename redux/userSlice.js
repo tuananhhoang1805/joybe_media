@@ -40,6 +40,21 @@ export const getUserPost = createAsyncThunk(
   }
 );
 
+export const getSearchUsers = createAsyncThunk(
+  "user/searchUsers",
+  async (searchValue, thunkApi) => {
+    try {
+      const res = await axios.get(
+        `${server}/api/user/search?name=${searchValue}`
+      );
+      return res.data;
+    } catch (error) {
+      const message = error.response.data.message;
+      return thunkApi.rejectWithValue(message);
+    }
+  }
+);
+
 const userSlice = createSlice({
   name: "users",
   initialState,
@@ -50,6 +65,9 @@ const userSlice = createSlice({
       state.message = "";
       state.isSuccess = false;
     },
+    clearUser : (state) => {
+      state.searchUsers = []
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -76,10 +94,23 @@ const userSlice = createSlice({
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;
+      })
+      .addCase(getSearchUsers.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(getSearchUsers.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.searchUsers = action.payload.users;
+      })
+      .addCase(getSearchUsers.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
       });
   },
 });
 
-export const { reset } = userSlice.actions;
+export const { reset, clearUser } = userSlice.actions;
 
 export default userSlice.reducer;

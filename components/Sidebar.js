@@ -74,6 +74,7 @@ const Sidebar = () => {
     userPost();
   }, [session?.user.id]);
 
+
   useEffect(() => {
     const like = posts?.post?.map((like) => {
       return like.likes.length;

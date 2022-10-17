@@ -11,6 +11,7 @@
   "dependencies": {
     "@next-auth/mongodb-adapter": "^0.0.2-next.298",
     "@reduxjs/toolkit": "^1.8.5",
+    "@tippyjs/react": "^4.2.6",
     "axios": "^0.27.2",
     "cloudinary": "^1.32.0",
     "framer-motion": "^7.3.6",
@@ -20,9 +21,12 @@
     "next-auth": "^4.10.3",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-hot-toast": "^2.4.0",
+    "react-loading-skeleton": "^3.1.0",
     "react-redux": "^8.0.4",
     "react-tabs": "^5.1.0",
-    "timeago-react": "^3.0.5"
+    "timeago-react": "^3.0.5",
+    "tippy.js": "^6.3.7"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.12",

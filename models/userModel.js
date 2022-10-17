@@ -20,7 +20,7 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      default: "user",
+      default: "User",
     },
     gender: {
       type: String,
@@ -48,13 +48,13 @@ const userSchema = new mongoose.Schema(
     followers: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "user",
+        ref: "User",
       },
     ],
     following: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "user",
+        ref: "User",
       },
     ],
   },

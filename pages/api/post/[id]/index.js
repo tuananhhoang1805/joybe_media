@@ -44,7 +44,7 @@ export default async function handler(req, res) {
           new: true,
         }
       );
-      res.status(200).json({ message: "Updated Post!", post });
+      res.status(200).json({ message: "Đã chỉnh sửa bài viết", post });
     } catch (error) {
       res.status(500).json({ message: error.message });
     }
@@ -67,67 +67,11 @@ export default async function handler(req, res) {
       }
 
       res.status(200).json({
-        message: "Deleted Post!",
+        message: "Đã xóa bài viết!",
         post,
       });
     } catch (error) {
       return res.status(500).json({ message: error.message });
     }
   }
-
-  //   if (method === "POST") {
-  //     const { status, images } = req.body;
-  //     if (images.length > 4) {
-  //       return res.status(400).json({
-  //         message: "You can only upload up to 4 images",
-  //       });
-  //     }
-  //     let image = [];
-  //     if (typeof(images) === "string") {
-  //       image.push(images);
-  //     } else {
-  //       image = images;
-  //     }
-
-  //     const postImage = [];
-  //     if (images) {
-  //       for (let i = 0; i < images.length; i++) {
-  //         const result = await cloudinary.v2.uploader.upload(images[i], {
-  //           folder: `Posts/${req.user._id}`,
-  //           transformation: [
-  //             {
-  //               height: 380,
-  //               width: 350,
-  //               crop: "fill",
-  //               gravity: "face",
-  //             },
-  //             {
-  //               quality: "auto",
-  //               fetch_format: "auto",
-  //             },
-  //           ],
-  //         });
-  //         postImage.push({
-  //           public_id: result.public_id,
-  //           url: result.secure_url,
-  //         });
-  //       }
-  //     }
-
-  //     const post = new Post({
-  //       status,
-  //       postImage: postImage,
-  //       user: req.query.id,
-  //       // user: req.user._id,
-  //     });
-
-  //     await post.save();
-  //     res
-  //       .status(201)
-  //       .json({ message: "Post created successfully", ...post._doc });
-  //     try {
-  //     } catch (error) {
-  //       res.status(500).json({ message: error });
-  //     }
-  //   }
 }

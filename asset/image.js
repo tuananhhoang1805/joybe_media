@@ -8,6 +8,7 @@ import messImage from "./image/icons8-mail-100.png";
 import videoImage from './image/icons8-video-call-100.png'
 import cameraImage from './image/icons8-camera-100.png'
 import emoji from './image/icons8-anime-emoji-100.png'
+import singOut from './image/icons8-sign-out-64.png'
 export {
   earthImage,
   accountImage,
@@ -18,5 +19,6 @@ export {
   messImage,
   videoImage,
   cameraImage,
-  emoji
+  emoji,
+  singOut
 };

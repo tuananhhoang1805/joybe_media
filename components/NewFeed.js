@@ -1,5 +1,4 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useState } from "react";
 import CreatePost from "./CreatePost";
 import Feed from "./Feed";
 

@@ -71,6 +71,7 @@ export const deletePost = createAsyncThunk(
     }
   }
 );
+
 export const updatePost = createAsyncThunk(
   "posts/updatePost",
   async ({ id, status }, thunkApi) => {
@@ -97,7 +98,6 @@ export const likePost = createAsyncThunk(
       const res = await axios.patch(`${server}/api/post/${id}/like`, {
         user_id,
       });
-      console.log(res.data);
       return res.data;
     } catch (error) {
       const message = error.response.data.message;
@@ -113,7 +113,6 @@ export const unlikePost = createAsyncThunk(
       const res = await axios.patch(`${server}/api/post/${id}/unlike`, {
         user_id,
       });
-      console.log(res.data);
       return res.data;
     } catch (error) {
       const message = error.response.data.message;
@@ -121,6 +120,7 @@ export const unlikePost = createAsyncThunk(
     }
   }
 );
+
 export const postSlice = createSlice({
   name: "posts",
   initialState,
@@ -169,19 +169,20 @@ export const postSlice = createSlice({
       })
       .addCase(createPost.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.message = action.payload.message;
         state.feedPosts = [action.payload, { ...state.feedPosts }];
+        state.message = action.payload.message;
       })
       .addCase(createPost.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
-        state.message = action.payload;
+        state.message = action.payload.message;
       })
       .addCase(deletePost.pending, (state) => {
         state.isLoading = true;
       })
       .addCase(deletePost.fulfilled, (state, action) => {
         state.isLoading = false;
+        state.message = action.payload.message;
         state.feedPosts = state.feedPosts.post.filter(
           (post) => post._id !== action.payload.id
         );
@@ -189,13 +190,14 @@ export const postSlice = createSlice({
       .addCase(deletePost.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
-        state.message = action.payload;
+        state.message = action.payload.message;
       })
       .addCase(updatePost.pending, (state) => {
         state.isLoading = true;
       })
       .addCase(updatePost.fulfilled, (state, action) => {
         state.isLoading = false;
+        state.message = action.payload.message;
         state.feedPosts = state.feedPosts.post.map((post) =>
           post._id === action.payload.id ? action.payload : post
         );
@@ -209,7 +211,6 @@ export const postSlice = createSlice({
         state.isLoading = true;
       })
       .addCase(likePost.fulfilled, (state, action) => {
-        console.log(action.payload);
         state.isLoading = false;
         state.feedPosts = state.feedPosts.post.map((post) =>
           post._id === action.payload.id ? action.payload.post : post

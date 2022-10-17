@@ -10,20 +10,14 @@ cloudinary.config({
 
 export default async function handler(req, res) {
   const { method } = req;
-  const { page, limit } = req.body;
-  // const pageOptions = {
-  //   page: parseInt(page * 1) || 10,
-  //   limit: parseInt(limit * 1) || 100,
-  //   skip: (page - 1) * limit,
-  // };
+  const { page, limit } = req.query;
 
-  // console.log(page ,limit );
   await dbconnect();
   if (method === "GET") {
     try {
       const post = await Post.find()
-        .limit(limit * 1 || 5)
-        .skip((page - 1 ) * ( limit * 1 || 10))
+        .limit(limit || 105)
+        .skip((page - 1 ) * ( limit || 10))
         .sort({ createdAt: -1 })
         .populate("user likes", "image , name  ,email , followers")
         .populate({
@@ -33,7 +27,7 @@ export default async function handler(req, res) {
             model: "User",
           }
         })
-      res.status(200).json({ message: "Success!", result: post.length, post });
+      res.status(200).json({ message: "Thành Công", result: post.length, post });
     } catch (error) {
       res.status(500).json({ message: error.message });
     }
@@ -42,9 +36,9 @@ export default async function handler(req, res) {
   if (method === "POST") {
     const { status, images, user_id } = req.body;
 
-    if (images.length > 4) {
+    if (images?.length > 4) {
       return res.status(400).json({
-        message: "You can only upload up to 4 images",
+        message: "Bạn có thể upload 4 bức ảnh",
       });
     }
     let image = [];
@@ -56,7 +50,7 @@ export default async function handler(req, res) {
 
     const postImage = [];
 
-    for (let i = 0; i < images.length; i++) {
+    for (let i = 0; i < images?.length; i++) {
       const result = await cloudinary.v2.uploader.upload(images[i], {
         folder: `Posts/${user_id}`,
         transformation: [
