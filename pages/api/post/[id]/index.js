@@ -15,7 +15,7 @@ export default async function handler(req, res) {
   if (method === "GET") {
     try {
       const post = await Post.findById({ _id: req.query.id })
-        .populate("user likes", "image , name  ,email , followers")
+        .populate("user likes", "image , name  ,email , followers , following")
         .populate({
           path: "comments",
           populate: {

@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .inputIcon {
+    @apply flex items-center space-x-1 hover:bg-gray-100 flex-grow justify-center p-2 rounded-xl cursor-pointer;
+  }
+
+  .follow {
+    @apply py-1 px-4 border-red-600 border-2 text-red-500 hover:bg-red-200;
+  }
+
+  .unfollow {
+    @apply py-1 px-4 border-black border-2 text-black hover:bg-slate-50;
+  }
+}

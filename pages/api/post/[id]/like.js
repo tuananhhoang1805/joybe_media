@@ -6,6 +6,7 @@ export default async function handler(req, res) {
   const { method } = req;
 
   if (method === "PATCH") {
+    console.log({ _id: req.query.id, likes: req.body.user_id });
     try {
       const post = await Post.find({
         _id: req.query.id,

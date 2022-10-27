@@ -1,8 +1,6 @@
 import { getProviders, signIn } from "next-auth/react";
 import Head from "next/head";
 import {
-  FacebookIcon,
-  GithubIcon,
   GoogleIcon,
   LogoIcon,
 } from "../components/Icon";
@@ -34,12 +32,6 @@ export default function SignIn({ providers }) {
                   className="w-[95vw] max-w-[375px] flex justify-center items-center relative border border-gray-200 hover:border-gray-400 transition h-11"
                 >
                   <p>Sign in with {provider.name}</p>
-                  {/* {provider.name === "Facebook" && (
-                    <FacebookIcon className="absolute top-1/2 -translate-y-1/2 left-3 w-6 h-6 " />
-                  )} */}
-                  {provider.name === "GitHub" && (
-                    <GithubIcon className="absolute top-1/2 -translate-y-1/2 left-3 w-6 h-6 " />
-                  )}
                   {provider.name === "Google" && (
                     <GoogleIcon className="absolute top-1/2 -translate-y-1/2 left-3 w-6 h-6 " />
                   )}

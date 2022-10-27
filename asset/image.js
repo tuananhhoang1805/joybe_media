@@ -9,6 +9,7 @@ import videoImage from './image/icons8-video-call-100.png'
 import cameraImage from './image/icons8-camera-100.png'
 import emoji from './image/icons8-anime-emoji-100.png'
 import singOut from './image/icons8-sign-out-64.png'
+import dost from './image/icons8-dots-loading-60.png'
 export {
   earthImage,
   accountImage,
@@ -20,5 +21,6 @@ export {
   videoImage,
   cameraImage,
   emoji,
-  singOut
+  singOut,
+  dost
 };
