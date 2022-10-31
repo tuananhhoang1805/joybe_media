@@ -107,7 +107,7 @@ const Layout = ({ children, title, description }) => {
               </a>
             </Link>
 
-            <Link href="/follower">
+            <Link href="/following">
               <a>
                 <HeaderIcon Icon={HeartIcon} className="h-6 w-6" />
               </a>

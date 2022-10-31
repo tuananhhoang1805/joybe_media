@@ -18,4 +18,8 @@
   .profileText{
     @apply font-medium text-teal-500
   }
+
+  .inputEditProfile{
+    @apply hidden ml-2 items-center bg-slate-100 outline-none border-none md:flex p-2 rounded-md
+  }
 }

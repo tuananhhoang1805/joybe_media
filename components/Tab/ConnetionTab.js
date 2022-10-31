@@ -36,10 +36,6 @@ const ConnetionTab = ({ id }) => {
 
                   <p className="font-bold">{user.name}</p>
                 </div>
-
-                <div className="flex gap-x-2">
-                  <button>Unfollow</button>
-                </div>
               </div>
             );
           })}

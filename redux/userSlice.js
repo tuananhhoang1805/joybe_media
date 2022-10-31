@@ -54,7 +54,18 @@ export const getSearchUsers = createAsyncThunk(
     }
   }
 );
-
+export const updateUser = createAsyncThunk(
+  "user/updateUser",
+  async ({id, data}, thunkApi) => {
+    try {
+      const res = await axios.put(`${server}/api/user/${id}`, data);
+      return res.data;
+    } catch (error) {
+      const message = error.response.data.message;
+      return thunkApi.rejectWithValue(message);
+    }
+  }
+);
 export const followUser = createAsyncThunk(
   "user/followUser",
   async ({ id, user_id }, thunkApi) => {
@@ -106,6 +117,19 @@ const userSlice = createSlice({
         state.singleUser = action.payload;
       })
       .addCase(getSingleUser.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+      })
+      .addCase(updateUser.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(updateUser.fulfilled, (state, action) => {
+        console.log(action.payload);
+        state.isLoading = false;
+        state.singleUser = action.payload;
+      })
+      .addCase(updateUser.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;

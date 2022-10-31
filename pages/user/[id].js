@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
 
@@ -9,7 +9,7 @@ import Layout from "../../components/Layout";
 import PostTab from "../../components/Tab/PostTab";
 import ProfileTab from "../../components/Tab/ProfileTab";
 import ConnetionTab from "../../components/Tab/ConnetionTab";
-import { openEditProfile } from "../../redux/modalSlice";
+import { closeEditProfile, openEditProfile } from "../../redux/modalSlice";
 import { useDispatch, useSelector } from "react-redux";
 import EditProfileModal from "../../components/Modal/EditProfileModal";
 
@@ -36,11 +36,21 @@ const UserPorfile = ({ user }) => {
     "Check In",
   ];
   const [active, setActive] = useState(buttonTabs[0]);
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const { openModalProfile } = useSelector((state) => state.modal);
 
-  console.log(openModalProfile);
   const { data: session } = useSession();
+
+  useEffect(() => {
+    openModalProfile
+      ? (document.body.style.overflow = "hidden")
+      : (document.body.style.overflow = "visible");
+  }, [openModalProfile]);
+
+  const openEdit = () => {
+    window.scrollTo(0, 0);
+    dispatch(openEditProfile())
+  }
   return (
     <div className="bg-slate-100 min-h-screen">
       <Layout title={`${user.name} - Joybe`}>
@@ -73,7 +83,9 @@ const UserPorfile = ({ user }) => {
 
                     {user._id === session?.user?.id && (
                       <div className="flex">
-                        <button onClick={() => dispatch(openEditProfile())}>Chỉnh sửa trang cá nhân</button>
+                        <button onClick={openEdit}>
+                          Chỉnh sửa trang cá nhân
+                        </button>
                       </div>
                     )}
                   </div>
@@ -114,7 +126,7 @@ const UserPorfile = ({ user }) => {
           <div className="min-h-screen bg-white w-[40%] flex-col hidden md:flex"></div>
         </div>
 
-        {openModalProfile && <EditProfileModal />}
+        {openModalProfile && <EditProfileModal handleClose={() => dispatch(closeEditProfile())}/>}
       </Layout>
     </div>
   );

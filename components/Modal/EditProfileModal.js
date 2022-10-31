@@ -8,8 +8,9 @@ import { useDispatch, useSelector } from "react-redux";
 
 import Backdrop from "./Backdrop";
 import { getFeedPosts, getSinglePost, updatePost } from "../../redux/postSlice";
-import { closePost } from "../../redux/modalSlice";
+import { closeEditProfile, closePost } from "../../redux/modalSlice";
 import toast from "react-hot-toast";
+import { getSingleUser, updateUser } from "../../redux/userSlice";
 
 const dropIn = {
   hidden: {
@@ -34,29 +35,50 @@ const dropIn = {
 
 const EditProfileModal = ({ handleClose }) => {
   const { data: session } = useSession();
-//   const { isLoading, postId, message } = useSelector((state) => state.posts);
-
-
+  const { singleUser, isLoading } = useSelector((state) => state.users);
   const dispatch = useDispatch();
-  const inputRef = useRef();
 
-//   useEffect(() => {
-//     dispatch(getSinglePost(postId));
-//     inputRef.current.focus();
-//   }, []);
-  const [editValue, setEditValue] = useState("");
-//   const handleUpdatePost = async (e) => {
-//     e.preventDefault();
+  const initial = {
+    gender: "",
+    birthday: "",
+    mobile: "",
+    address: "",
+    favorate: "",
+    links: [],
+  };
 
-//     await dispatch(updatePost({ id: postId, status: editValue }));
-//     toast.success("Chỉnh sửa bài viết thành công", { position: "bottom-right" });
-//     await dispatch(getFeedPosts());
-//     await dispatch(closePost());
-//   };
+  const [value, setValue] = useState(initial);
+  console.log(value);
+  useEffect(() => {
+    const userPost = async () => {
+      await dispatch(getSingleUser(session?.user?.id));
+    };
+    userPost();
+  }, [session?.user?.id]);
 
-//   const handleEditPost = (e) => {
-//     setEditValue(e.target.value);
-//   };
+  useEffect(() => {
+    setValue(singleUser?.users);
+  }, []);
+  const handleEditProfile = async (e) => {
+    e.preventDefault();
+
+    await dispatch(updateUser({ id: session?.user?.id, data: value }));
+
+    await dispatch(closeEditProfile());
+
+    setValue({
+      gender: "",
+      birthday: "",
+      mobile: "",
+      address: "",
+      favorate: "",
+      links: [],
+    });
+  };
+
+  const handleChange = (e) => {
+    setValue({ ...value, [e.target.name]: e.target.value });
+  };
   return (
     <Backdrop onClick={handleClose}>
       <motion.div
@@ -68,36 +90,96 @@ const EditProfileModal = ({ handleClose }) => {
       >
         <div className="bg-white w-[500px] min-h-[328px] max-h-[80vh] rounded-md relative flex flex-col">
           <div className="text-center p-4 border-b-2">
-            <span className="font-bold text-[1.25rem]">Chỉnh sửa thông tin</span>
-          </div>
-          {/* <div className="p-4">
-            <div className="flex gap-2 mb-4">
-              <Image
-                alt={session?.user.name}
-                width={40}
-                height={40}
-                className="rounded-full"
-                src={session?.user.image}
-                layout="fixed"
-              />
-              <p className="font-medium">{session?.user.name}</p>
-            </div>
-            <textarea
-              ref={inputRef}
-              placeholder={`What's on your change,${session.user.name} ?`}
-              rows="4"
-              className="w-full focus:outline-none text-[1.5rem] font-normal"
-              onChange={handleEditPost}
-            />
+            <span className="font-bold text-[1.25rem]">
+              Chỉnh sửa thông tin
+            </span>
 
-            <button
-              type="submit"
-              className=" w-full text-center bg-blue-600 p-2 rounded-lg text-white font-medium"
-              onClick={handleUpdatePost}
-            >
-              Lưu
-            </button>
-          </div> */}
+            <div className="absolute top-[10px] right-[10px]">
+              <p
+                onClick={() => dispatch(closeEditProfile())}
+                className="cursor-pointer"
+              >
+                X
+              </p>
+            </div>
+          </div>
+
+          <div className="p-4 flex flex-col gap-4">
+            <div className="flex items-center">
+              <label>Giới tính : </label>
+              <input
+                type="text"
+                className="inputEditProfile"
+                placeholder=""
+                value={value.gender}
+                onChange={(e) => setValue({ ...value, gender: e.target.value })}
+              />
+            </div>
+            <div className="flex items-center">
+              <label>Ngày sinh : </label>
+              <input
+                type="date"
+                className="inputEditProfile"
+                placeholder=""
+                value={value.birthday}
+                onChange={(e) =>
+                  setValue({ ...value, birthday: e.target.value })
+                }
+              />
+            </div>
+            <div className="flex items-center">
+              <label>Liên lạc : </label>
+              <input
+                type="text"
+                className="inputEditProfile"
+                placeholder=""
+                value={value.mobile}
+                onChange={(e) => setValue({ ...value, mobile: parseInt(e.target.value) })}
+              />
+            </div>
+            <div className="flex items-center">
+              <label>Địa chỉ </label>
+              <input
+                type="text"
+                className="inputEditProfile"
+                placeholder=""
+                value={value.address}
+                onChange={(e) =>
+                  setValue({ ...value, address: e.target.value })
+                }
+              />
+            </div>
+            <div className="flex items-center">
+              <label>Link : </label>
+              <input
+                type="text"
+                className="inputEditProfile"
+                placeholder=""
+                value={value.links}
+                onChange={(e) => setValue({ ...value, links: e.target.value })}
+              />
+            </div>
+            <div className="flex items-center">
+              <label>Sở thích : </label>
+              <input
+                type="text"
+                className="inputEditProfile"
+                placeholder=""
+                value={value.favorate}
+                onChange={(e) =>
+                  setValue({ ...value, favorate: e.target.value })
+                }
+              />
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            className=" w-full text-center bg-blue-600 p-2 text-white font-medium"
+            onClick={handleEditProfile}
+          >
+            <div>Lưu</div>
+          </button>
         </div>
       </motion.div>
     </Backdrop>

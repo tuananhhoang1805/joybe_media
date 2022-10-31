@@ -16,9 +16,19 @@ export default async function handler(req, res) {
   }
   if (method === "PUT") {
     try {
-      const users = await User.findByIdAndUpdate(req.query.id, req.body, {
-        new: true,
-      });
+      console.log(req.query.id);
+      console.log(req.body);
+      const users = await User.findByIdAndUpdate(
+        {
+          _id: req.query.id,
+        },
+
+        req.body,
+
+        {
+          new: true,
+        }
+      );
       res.status(200).json({ users });
     } catch (error) {
       res.status(500).json({ message: error.message });

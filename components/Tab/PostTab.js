@@ -15,7 +15,7 @@ const PostTab = ({ id }) => {
       await dispatch(getUserPost(id));
     };
     userPost();
-  }, [dispatch, id]);
+  }, [id]);
 
   {
     posts?.post?.length < 1  ? (
