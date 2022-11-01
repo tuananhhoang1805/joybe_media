@@ -1,8 +1,8 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
-
+// const server = "http://localhost:3000";
 const server = "https://joybe-media.vercel.app";
-
+// 
 const initialState = {
   isLoading: false,
   isError: false,

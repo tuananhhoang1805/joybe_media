@@ -109,6 +109,7 @@ export async function getServerSideProps(context) {
       session,
       posts: JSON.parse(JSON.stringify(posts)),
       users: JSON.parse(JSON.stringify(users)),
+      comments: JSON.parse(JSON.stringify(comments)),
     },
   };
 }
