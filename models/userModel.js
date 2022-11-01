@@ -26,7 +26,7 @@ const userSchema = new mongoose.Schema(
       type: String,
     },
     mobile: {
-      type: Number,
+      type: String,
       maxlength: 20,
     },
     address: {
@@ -39,7 +39,7 @@ const userSchema = new mongoose.Schema(
     },
     links: [String],
     birthdate: {
-      type: Date, 
+      type: String, 
     },
     followers: [
       {

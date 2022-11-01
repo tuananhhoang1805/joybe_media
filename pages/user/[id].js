@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
-
+import { getSession } from "next-auth/react";
 import User from "../../models/userModel";
 import dbconnect from "../../utils/mongose";
 
@@ -19,9 +19,19 @@ export async function getServerSideProps({ params }) {
   await dbconnect();
 
   const user = await User.findById(id).populate("followers following");
+  // const session = await getSession();
 
+  // if (!session) {
+  //   return {
+  //     redirect: {
+  //       permanent: false,
+  //       destination: "/signin",
+  //     },
+  //   };
+  // }
   return {
     props: {
+      // session,
       user: JSON.parse(JSON.stringify(user)),
     },
   };
@@ -49,8 +59,8 @@ const UserPorfile = ({ user }) => {
 
   const openEdit = () => {
     window.scrollTo(0, 0);
-    dispatch(openEditProfile())
-  }
+    dispatch(openEditProfile());
+  };
   return (
     <div className="bg-slate-100 min-h-screen">
       <Layout title={`${user.name} - Joybe`}>
@@ -126,7 +136,9 @@ const UserPorfile = ({ user }) => {
           <div className="min-h-screen bg-white w-[40%] flex-col hidden md:flex"></div>
         </div>
 
-        {openModalProfile && <EditProfileModal handleClose={() => dispatch(closeEditProfile())}/>}
+        {openModalProfile && (
+          <EditProfileModal handleClose={() => dispatch(closeEditProfile())} />
+        )}
       </Layout>
     </div>
   );
