@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-
+const User = require('./userModel') 
 const commentSchema = new mongoose.Schema(
   {
     content: {

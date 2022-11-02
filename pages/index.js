@@ -20,7 +20,7 @@ import Comment from "../models/commentModel";
 import dbconnect from "../utils/mongose";
 import { closePost } from "../redux/modalSlice";
 
-export default function Home({ posts, users }) {
+export default function Home({ posts, users , comments }) {
   const { status } = useSession();
 
   const { statusPost, openModalCreatePost } = useSelector(
@@ -29,14 +29,6 @@ export default function Home({ posts, users }) {
   const { message, isLoading } = useSelector((state) => state.posts);
 
   const dispatch = useDispatch();
-
-  //  get Post in first load
-
-  useEffect(() => {
-    if (message) {
-      toast.success(message, { position: "bottom-right" });
-    }
-  }, []);
 
   useEffect(() => {
     statusPost

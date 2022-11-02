@@ -61,7 +61,7 @@ const FeedDetails = (props) => {
   useEffect(() => {
     dispatch(getFeedPosts());
   }, [liked]);
-  
+
   const handleLike = async () => {
     if (liked) {
       setLiked(false);
@@ -86,11 +86,8 @@ const FeedDetails = (props) => {
     setIsLoading(true);
     await dispatch(deletePost(id));
 
-    if (isError) {
-      toast.error(message, { position: "bottom-right" });
-    } else {
-      toast.success("Xóa bài viết thành công", { position: "bottom-right" });
-    }
+    toast.success("Xóa bài viết thành công", { position: "bottom-right" });
+
     setIsLoading(false);
     dispatch(getFeedPosts());
   };
@@ -129,25 +126,28 @@ const FeedDetails = (props) => {
   };
 
   const handleFollow = async () => {
-
     await dispatch(followUser({ id: user._id, user_id: session?.user.id }));
-    setFlUser(true)
+    setFlUser(true);
     dispatch(getFeedPosts());
     if (isError) {
       toast.error(message, { position: "bottom-right" });
     } else {
-      toast.success("Theo dõi người dùng thành công", { position: "bottom-right" });
+      toast.success("Theo dõi người dùng thành công", {
+        position: "bottom-right",
+      });
     }
   };
 
   const handleUnfollow = async () => {
     await dispatch(unFollowUser({ id: user._id, user_id: session?.user.id }));
-    setFlUser(false)
+    setFlUser(false);
     dispatch(getFeedPosts());
     if (isError) {
       toast.error(message, { position: "bottom-right" });
     } else {
-      toast.success("Hủy theo dõi người dùng thành công", { position: "bottom-right" });
+      toast.success("Hủy theo dõi người dùng thành công", {
+        position: "bottom-right",
+      });
     }
   };
   return (

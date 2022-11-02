@@ -43,13 +43,7 @@ const CreatePostModal = ({ handleClose }) => {
     user: {},
   });
 
-  const { isError } = useSelector((state) => state.posts);
   const imageRef = useRef();
-
-  useEffect(() => {
-    toast.error(isError, { position: "bottom-right" });
-  }, [isError]);
-
 
   const handleaddPost = async (e) => {
     e.preventDefault();

@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
-
+const Comment = require('./commentModel') 
+const User = require('./userModel') 
 const postSchema = new mongoose.Schema(
   {
     user: {
@@ -26,6 +27,7 @@ const postSchema = new mongoose.Schema(
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Comment",
+        required: true,
       },
     ],
     likes: [
