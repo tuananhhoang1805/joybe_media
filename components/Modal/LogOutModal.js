@@ -5,9 +5,15 @@ import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 
 import { singOut } from "../../asset/image";
+import { useRouter } from "next/router";
 
 const LogOutModal = () => {
   const { data: session } = useSession();
+  const router = useRouter()
+  const handleLogOut = () => {
+    signOut()
+    router.push("/signin")
+  }
   return (
     <motion.div
       className="absolute bottom-[-400%] w-max h-max right-2 bg-slate-50 shadow-md"
@@ -30,7 +36,7 @@ const LogOutModal = () => {
         </p>
       </div>
 
-      <div className="p-2 cursor-pointer flex items-center gap-x-4" onClick={() => signOut()}>
+      <div className="p-2 cursor-pointer flex items-center gap-x-4" onClick={handleLogOut}>
         <p>Sign Out</p>
         <Image src={singOut} alt="" width={30} height={30} layout="fixed"/>
       </div>
