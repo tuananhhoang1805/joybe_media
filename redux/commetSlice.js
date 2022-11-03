@@ -1,7 +1,8 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
-// const server = "http://localhost:3000";
-const server = "https://joybe-media.vercel.app";
+import { getFeedPosts, getSinglePost } from "./postSlice";
+const server = "http://localhost:3000";
+// const server = "https://joybe-media.vercel.app";
 // 
 const initialState = {
   isLoading: false,
@@ -15,6 +16,8 @@ export const createComment = createAsyncThunk(
   async (data, thunkAPI) => {
     try {
       const res = await axios.post(`${server}/api/comment`, data);
+       await thunkAPI.dispatch(getFeedPosts());
+       await thunkAPI.dispatch(getSinglePost());
       return res.data;
     } catch (error) {
       const message = error.response.data.message;
@@ -23,24 +26,26 @@ export const createComment = createAsyncThunk(
   }
 );
 
-export const updateComment = createAsyncThunk(
-  "comment/updateComment",
-  async (data, thunkAPI) => {
-    try {
-      const res = await axios.patch(`${server}/api/comment/${data.id}`, data);
-      return res.data;
-    } catch (error) {
-      const message = error.response.data.message;
-      return thunkAPI.rejectWithValue(message);
-    }
-  }
-);
+// export const updateComment = createAsyncThunk(
+//   "comment/updateComment",
+//   async (data, thunkAPI) => {
+//     try {
+//       const res = await axios.patch(`${server}/api/comment/${data.id}`, data);
+//       return res.data;
+//     } catch (error) {
+//       const message = error.response.data.message;
+//       return thunkAPI.rejectWithValue(message);
+//     }
+//   }
+// );
 
 export const deleteComment = createAsyncThunk(
   "comment/deleteComment",
   async (id, thunkAPI) => {
     try {
       const res = await axios.delete(`${server}/api/comment/${id}`);
+      await thunkAPI.dispatch(getFeedPosts());
+      await thunkAPI.dispatch(getSinglePost());
       return res.data;
     } catch (error) {
       const message = error.response.data.message;
@@ -56,6 +61,8 @@ export const likeComment = createAsyncThunk(
       const res = await axios.patch(`${server}/api/comment/${id}/like`, {
         user_id,
       });
+      await thunkAPI.dispatch(getFeedPosts());
+      await thunkAPI.dispatch(getSinglePost());
       return res.data;
     } catch (error) {
       const message = error.response.data.message;
@@ -71,6 +78,8 @@ export const unlikeComment = createAsyncThunk(
       const res = await axios.patch(`${server}/api/comment/${id}/unlike`, {
         user_id,
       });
+      await thunkAPI.dispatch(getFeedPosts());
+      await thunkAPI.dispatch(getSinglePost());
       return res.data;
     } catch (error) {
       const message = error.response.data.message;
@@ -95,15 +104,6 @@ const commentsSlice = createSlice({
         state.isSuccess = true;
       })
       .addCase(createComment.rejected, (state, action) => {
-        state.isLoading = false;
-        state.isError = true;
-        state.message = action.payload;
-      })
-      .addCase(updateComment.fulfilled, (state) => {
-        state.isLoading = false;
-        state.isSuccess = true;
-      })
-      .addCase(updateComment.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;

@@ -12,6 +12,7 @@ import ConnetionTab from "../../components/Tab/ConnetionTab";
 import { closeEditProfile, openEditProfile } from "../../redux/modalSlice";
 import { useDispatch, useSelector } from "react-redux";
 import EditProfileModal from "../../components/Modal/EditProfileModal";
+import PictureTab from "../../components/Tab/PictureTab";
 
 export async function getServerSideProps({ params }) {
   const { id } = params;
@@ -129,8 +130,8 @@ const UserPorfile = ({ user }) => {
             {active === "Connection" && (
               <ConnetionTab id={user._id} user={user} />
             )}
-            {/* {active === "Ảnh" && <PostTab id={user._id} />}
-          {active === "Video" && <PostTab id={user._id} />}
+            {active === "Ảnh" && <PictureTab id={user._id} />}
+          {/* {active === "Video" && <PostTab id={user._id} />}
           {active === "Check In" && <PostTab id={user._id} />} */}
           </div>
           <div className="min-h-screen bg-white w-[40%] flex-col hidden md:flex"></div>

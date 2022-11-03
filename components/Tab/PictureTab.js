@@ -1,16 +1,11 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { useSession } from "next-auth/react";
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getUserPost } from "../../redux/userSlice";
-import FeedDetails from "../FeedDetails";
+import { ImageDetail } from "../ImageDetail";
 
-const PostTab = ({ id }) => {
+const PictureTab = ({ id }) => {
   const { posts } = useSelector((state) => state.users);
-
-
-  // console.log(posts);
-  // console.log({ id : id , posts: posts});
   const { data: session } = useSession();
   const dispatch = useDispatch();
 
@@ -21,21 +16,13 @@ const PostTab = ({ id }) => {
     userPost();
   }, [id]);
 
-  {
-    posts?.post?.length < 1  ? (
-      <div>Create New Post</div>
-    ) : (
-      <div></div>
-    );
-  }
-
   return (
-    <div>
+    <div className="w-full bg-white p-4 shadow-md h-max flex items-center gap-x-4 mt-4">
       {posts?.post?.map((post) => {
-        return <FeedDetails key={post._id} {...post} />;
+        return <ImageDetail key={post._id} {...post} />;
       })}
     </div>
   );
 };
 
-export default PostTab;
+export default PictureTab;

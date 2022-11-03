@@ -85,11 +85,8 @@ const FeedDetails = (props) => {
   const handleDeletePost = async (id) => {
     setIsLoading(true);
     await dispatch(deletePost(id));
-
     toast.success("Xóa bài viết thành công", { position: "bottom-right" });
-
     setIsLoading(false);
-    dispatch(getFeedPosts());
   };
 
   const handleUpdatePost = async (id) => {

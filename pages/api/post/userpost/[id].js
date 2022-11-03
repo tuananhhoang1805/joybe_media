@@ -7,7 +7,7 @@ export default async function handler(req, res) {
   await dbconnect();
   if (method === "GET") {
     try {
-      const post = await Post.find({ user: req.query.id })
+      const post = await Post.find({ user : req.query.id })
         .sort({ createdAt: -1 })
         .populate("user likes", "name image email followers")
         .populate({

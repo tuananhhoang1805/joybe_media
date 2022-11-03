@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
-const server = "https://joybe-media.vercel.app";
-// const server = "http://localhost:3000";
+// const server = "https://joybe-media.vercel.app";
+const server = "http://localhost:3000";
 const initialState = {
   searchUsers: [],
   isLoading: false,
@@ -30,7 +30,7 @@ export const getSingleUser = createAsyncThunk(
 
 export const getUserPost = createAsyncThunk(
   "user/getUserPost",
-  async (id, thunkApi) => {
+  async ( id , thunkApi) => {
     try {
       const res = await axios.get(`${server}/api/post/userpost/${id}`);
       return res.data;
@@ -126,7 +126,6 @@ const userSlice = createSlice({
         state.isLoading = true;
       })
       .addCase(updateUser.fulfilled, (state, action) => {
-        console.log(action.payload);
         state.isLoading = false;
         state.singleUser = action.payload;
       })
@@ -164,7 +163,6 @@ const userSlice = createSlice({
         state.isLoading = true;
       })
       .addCase(followUser.fulfilled, (state, action) => {
-        console.log({ action: action.payload });
         state.isLoading = false;
         state.isSuccess = true;
         state.users = state.users.map((item) =>
@@ -180,7 +178,6 @@ const userSlice = createSlice({
         state.isLoading = true;
       })
       .addCase(unFollowUser.fulfilled, (state, action) => {
-        console.log(action.payload);
         state.isLoading = false;
         state.isSuccess = true;
         state.users = state.users.map((item) =>

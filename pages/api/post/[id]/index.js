@@ -14,6 +14,8 @@ export default async function handler(req, res) {
   await dbconnect();
   if (method === "GET") {
     try {
+
+      console.log({_id: req.query.id});
       const post = await Post.findById({ _id: req.query.id })
         .populate("user likes", "image , name  ,email , followers , following")
         .populate({

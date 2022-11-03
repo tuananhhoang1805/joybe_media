@@ -1,8 +1,9 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+import { useDispatch } from "react-redux";
 
-const server = "https://joybe-media.vercel.app";
-// const server = "http://localhost:3000";
+// const server = "https://joybe-media.vercel.app";
+const server = "http://localhost:3000";
 const initialState = {
   feedPosts: [],
   message: "",
@@ -16,8 +17,9 @@ const initialState = {
 
 export const getSinglePost = createAsyncThunk(
   "post/getSinglePost",
-  async (id, thunkApi) => {
+  async ({id}, thunkApi) => {
     try {
+
       const res = await axios.get(`${server}/api/post/${id}`);
 
       return res.data;
@@ -49,6 +51,8 @@ export const createPost = createAsyncThunk(
       const res = await axios.post(`${server}/api/post`, data, {
         headers: { "Content-Type": "application/json" },
       });
+
+      await thunkApi.dispatch(getFeedPosts());
       return res.data;
     } catch (error) {
       const message = error.response.data.message;
@@ -64,6 +68,8 @@ export const deletePost = createAsyncThunk(
       const res = await axios.delete(`${server}/api/post/${id}`, {
         headers: { "Content-Type": "application/json" },
       });
+      await thunkApi.dispatch(getFeedPosts());
+      await thunkApi.dispatch(getSinglePost());
       return res.data;
     } catch (error) {
       const message = error.response.data.message;
@@ -83,6 +89,8 @@ export const updatePost = createAsyncThunk(
           headers: { "Content-Type": "application/json" },
         }
       );
+      await thunkApi.dispatch(getFeedPosts());
+      await thunkApi.dispatch(getSinglePost());
       return res.data;
     } catch (error) {
       const message = error.response.data.message;
@@ -95,9 +103,12 @@ export const likePost = createAsyncThunk(
   "posts/likePost",
   async ({ id, user_id }, thunkApi) => {
     try {
+      console.log({ id, user_id });
       const res = await axios.patch(`${server}/api/post/${id}/like`, {
         user_id,
       });
+      await thunkApi.dispatch(getFeedPosts());
+      await thunkApi.dispatch(getSinglePost());
       return res.data;
     } catch (error) {
       const message = error.response.data.message;
@@ -110,9 +121,12 @@ export const unlikePost = createAsyncThunk(
   "posts/unlikePost",
   async ({ id, user_id }, thunkApi) => {
     try {
+      console.log({ id, user_id });
       const res = await axios.patch(`${server}/api/post/${id}/unlike`, {
         user_id,
       });
+      await thunkApi.dispatch(getFeedPosts());
+      await thunkApi.dispatch(getSinglePost());
       return res.data;
     } catch (error) {
       const message = error.response.data.message;
@@ -190,7 +204,7 @@ export const postSlice = createSlice({
       .addCase(deletePost.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
-        state.message = action.payload.message;
+        state.message = action.payload?.message;
       })
       .addCase(updatePost.pending, (state) => {
         state.isLoading = true;

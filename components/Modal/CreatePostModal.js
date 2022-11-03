@@ -52,8 +52,8 @@ const CreatePostModal = ({ handleClose }) => {
     toast.dismiss();
     toast.success("Tạo bài viết thành công", { position: "bottom-right" });
     dispatch(closePost());
-    await dispatch(getFeedPosts());
-    await dispatch(getFeedPosts());
+    // await dispatch(getFeedPosts());
+    // await dispatch(getFeedPosts());
   };
 
   const handlechangePost = (e) => {
