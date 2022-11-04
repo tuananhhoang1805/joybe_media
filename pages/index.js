@@ -26,8 +26,6 @@ export default function Home({ posts, users , comments }) {
   const { statusPost, openModalCreatePost } = useSelector(
     (state) => state.modal
   );
-  const { message, isLoading } = useSelector((state) => state.posts);
-
   const dispatch = useDispatch();
 
   useEffect(() => {
